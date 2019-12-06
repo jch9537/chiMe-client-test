@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, AsyncStorage } from "react-native";
 import * as Google from "expo-google-app-auth";
 import { ClientId } from "./MyID";
+import { GoogleLog } from "../fetch";
 interface Props {
   navigation: any;
 }
@@ -13,9 +14,14 @@ export default class google extends Component<Props> {
       });
       console.log("..", result)
       if (result.type === "success") {
-        console.log("res", result);
-        const { email, givenName } = result.user;
-        this.props.navigation.navigate("Main");
+        const { email, name, photoUrl } = result.user;
+        let google = { email, name, photoUrl, oAuth: 1 }
+        return GoogleLog(google)
+          .then(res => res.json())
+          .then(res => {
+            AsyncStorage.setItem("userToken", res.token)
+            this.props.navigation.navigate("Main");
+          })
       }
     } catch (err) {
       console.log(err);

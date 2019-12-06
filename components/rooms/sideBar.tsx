@@ -39,6 +39,7 @@ class SideBar extends Component<Props, State> {
         let token = await AsyncStorage.getItem("userToken");
         let userData = await identifyUser(token);
         let participants = this.props.Room.participants;
+        console.log("participants", participants)
         if (this.props.Room.host_name === userData.name) {
             console.log("this.", this.props.Room.host_name)
             this.setState({
@@ -65,6 +66,7 @@ class SideBar extends Component<Props, State> {
         let token = await AsyncStorage.getItem("userToken");
         await participateRoom(token, this.props.Room.id);
         let userData = await identifyUser(token);
+        console.log("this.state.", this.state.participants)
         let JoinRooms = this.state.participants.concat([userData.name])
         this.setState({
             ...this.state,
@@ -77,29 +79,29 @@ class SideBar extends Component<Props, State> {
     getOut = async () => {
         let token = await AsyncStorage.getItem("userToken");
         let userData = await identifyUser(token);
-        let deleteJoin = [this.props.Room.host_name];
+        let deleteJoin = [];
         if (this.state.amIHost) {
-            Alert.alert("주인은 나갈 수 없습니다.")
+            return Alert.alert("주인은 나갈 수 없습니다.")
         } else {
             for (let i = 0; i < this.state.participants.length; i++) {
                 if (this.state.participants[i] !== userData.name) {
                     deleteJoin.push(this.state.participants[i])
                 }
             }
+            this.setState({
+                participants: deleteJoin
+            })
+            return JoinChatfromSideBar(`${token}`, this.props.Room.id)
+                .then(res => res.json())
+                .then(res => {
+                    if (res) {
+                        this.setState({
+                            ...this.state,
+                            amIParticipant: false
+                        });
+                    }
+                });
         }
-        this.setState({
-            participants: deleteJoin
-        })
-        return JoinChatfromSideBar(`${token}`, this.props.Room.id)
-            .then(res => res.json())
-            .then(res => {
-                if (res) {
-                    this.setState({
-                        ...this.state,
-                        amIParticipant: false
-                    });
-                }
-            });
         // await 
     };
 
