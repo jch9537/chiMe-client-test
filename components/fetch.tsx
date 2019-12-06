@@ -8,6 +8,12 @@ interface body {
   post_id: number;
   text?: string;
 }
+interface GoogleBody {
+  email?: string
+  name?: string
+  photoUrl?: string
+  oAuth?: number
+}
 //login 하는 fetch
 let server = "http://15.164.218.247:3000";
 
@@ -108,7 +114,6 @@ export const GetRoomlistOrGetRoominfo = async function(
   post_Id?: number | null
 ) {
   let server = "http://15.164.218.247:3000/posts";
-  // console.log(post_Id);
   if (post_Id) {
     server = `http://15.164.218.247:3000/post?post_id=${post_Id}`;
   }
@@ -152,7 +157,6 @@ export const JoinChatfromSideBar = function(
       credentials: "include"
     });
   } else {
-    console.log("post", post_id)
     return fetch(server + `/post?post_id=${post_id}`, {
       method: "DELETE",
       headers: {
@@ -213,4 +217,15 @@ export const EditRoom = function(body: body, token: string) {
     body: JSON.stringify(body),
     credentials: "include"
   });
-};
+}
+export const GoogleLog = function (body: GoogleBody) {
+  console.log("body", body)
+  return fetch(server + `/google`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body),
+    credentials: "include"
+  });
+}
